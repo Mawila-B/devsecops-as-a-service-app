@@ -1,0 +1,8 @@
+# Custom check for S3 bucket encryption
+checks "aws" {
+  description = "Custom check for S3 bucket encryption"
+  query        = "data.tfsec.aws.s3.encryption_customer_key"
+  required_types = ["aws_s3_bucket"]
+  required_labels = ["aws_s3_bucket"]
+  severity     = "ERROR"
+}

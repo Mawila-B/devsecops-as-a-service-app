@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Security Report - {{ scan_id }}</title>
+    <style>
+        :root { --critical: #ff3860; --high: #ff7043; --medium: #ffb300; }
+        .critical { background-color: var(--critical); }
+        .high { background-color: var(--high); }
+        .medium { background-color: var(--medium); }
+    </style>
+</head>
+<body>
+    <h1>Security Scan Report</h1>
+    <p>Scan ID: {{ scan_id }}</p>
+    <p>Target: {{ target }}</p>
+    
+    {% for scanner, results in findings.items() %}
+    <section>
+        <h2>{{ scanner | upper }} Results</h2>
+        <table>
+            <thead><tr><th>Severity</th><th>Issue</th><th>Description</th></tr></thead>
+            <tbody>
+            {% for item in results %}
+                <tr class="{{ item.severity | lower }}">
+                    <td>{{ item.severity }}</td>
+                    <td>{{ item.rule_id }}</td>
+                    <td>{{ item.description | truncate(100) }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% endfor %}
+    
+    {% if ai_summary %}
+    <section>
+        <h2>AI Analysis</h2>
+        <p>{{ ai_summary }}</p>
+    </section>
+    {% endif %}
+</body>
+</html>

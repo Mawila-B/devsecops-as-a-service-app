@@ -1,0 +1,8 @@
+<policies>
+  <scanner>
+    <policy name="API-Scan" enabled="true">
+      <scannerlevel>LOW</scannerlevel>
+      <attackstrength>MEDIUM</attackstrength>
+    </policy>
+  </scanner>
+</policies>
