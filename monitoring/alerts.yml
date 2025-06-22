@@ -1,0 +1,40 @@
+groups:
+- name: infrastructure
+  rules:
+  - alert: HighCPU
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100 > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage on {{ $labels.instance }}"
+      description: "CPU usage is above 80% for 5 minutes"
+
+  - alert: ServiceDown
+    expr: up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Service {{ $labels.job }} down on {{ $labels.instance }}"
+      description: "Service has been down for more than 1 minute"
+
+- name: application
+  rules:
+  - alert: FailedScans
+    expr: increase(scan_failures_total[1h]) > 5
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High scan failure rate"
+      description: "More than 5 scan failures in the last hour"
+
+  - alert: PaymentFailures
+    expr: increase(payment_failures_total[1h]) > 3
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Payment processing issues"
+      description: "Multiple payment failures detected"

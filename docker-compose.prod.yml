@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  backend:
+    image: your-registry/devsecops-backend:latest
+    environment:
+      - DATABASE_URL=postgresql://produser:prodpass@db:5432/proddb
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - ETHEREUM_NODE_URL=${ETHEREUM_NODE_URL}
+    ports:
+      - "8000:8000"
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+
+  frontend:
+    image: your-registry/devsecops-frontend:latest
+    ports:
+      - "80:80"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    deploy:
+      replicas: 3
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: proddb
+      POSTGRES_USER: produser
+      POSTGRES_PASSWORD: prodpass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  zap:
+    image: owasp/zap2docker-stable
+    command: zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.key=${ZAP_API_KEY}
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+
+volumes:
+  pgdata:
