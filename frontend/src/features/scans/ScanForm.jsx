@@ -11,7 +11,7 @@ const ScanForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    try {
+    try:
       const response = await fetch('/api/scans', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

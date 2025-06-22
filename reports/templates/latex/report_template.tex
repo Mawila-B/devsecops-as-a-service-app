@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable}
+
+\title{Security Report: \VAR{scan_id}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Scan Details}
+\begin{itemize}
+    \item Scan ID: \VAR{scan_id}
+    \item Target: \VAR{target}
+    \item Date: \VAR{date}
+\end{itemize}
+
+\section*{Scan Results}
+\BLOCK{for scanner, results in findings.items()}
+\subsection*{\VAR{scanner | upper} Results}
+\begin{longtable}{|l|l|p{10cm}|}
+\hline
+\textbf{Severity} & \textbf{Issue} & \textbf{Description} \\ \hline
+\endhead
+\BLOCK{for item in results}
+\VAR{item.severity} & \VAR{item.rule_id} & \VAR{item.description} \\ \hline
+\BLOCK{endfor}
+\end{longtable}
+\BLOCK{endfor}
+
+\BLOCK{if ai_summary}
+\section*{AI Analysis}
+\VAR{ai_summary}
+\BLOCK{endif}
+
+\end{document}
