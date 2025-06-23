@@ -11,7 +11,7 @@ from ..scanners import zap_adapter, tfsec_adapter, gitleaks_adapter, trivy_adapt
 from ..config import settings
 from ..utils.logging import logger
 from ..core.database import SessionLocal
-from ..core.models import Scan
+from ..core.models import Scan, User
 
 # Timeout configuration per scanner (seconds)
 SCANNER_TIMEOUTS = {

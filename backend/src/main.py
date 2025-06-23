@@ -1,6 +1,5 @@
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -8,6 +7,7 @@ from .api import endpoints, payment_endpoints, crypto_endpoints
 from .core.database import engine, Base
 from .config import settings
 from .utils.logging import logger
+from .middleware.security import add_security_middleware
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -35,6 +35,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Add security headers middleware
+add_security_middleware(app)
+
 # Include routers
 app.include_router(endpoints.router)
 app.include_router(payment_endpoints.router)
@@ -48,12 +51,6 @@ async def global_exception_handler(request: Request, exc: Exception):
         status_code=500,
         content={"detail": "Internal server error"}
     )
-
-# Rate limited endpoints
-@app.get("/")
-@limiter.limit("10/minute")
-async def root(request: Request):
-    return {"status": "DevSecOps Service Running"}
 
 # Health check endpoint
 @app.get("/health")
