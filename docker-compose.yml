@@ -1,51 +1,18 @@
-version: '3.8'
+version: "3.8"
 
 services:
   backend:
     build: ./backend
     ports:
       - "8000:8000"
-    volumes:
-      - ./reports:/app/reports
-      - ./backend:/app/backend
     environment:
-      - DATABASE_URL=postgresql://postgres:password@db:5432/devsecops
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-    depends_on:
-      - zap
-      - db
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+      - JIRA_BASE_URL=${JIRA_BASE_URL}
+      - JIRA_USERNAME=${JIRA_USERNAME}
+      - JIRA_API_TOKEN=${JIRA_API_TOKEN}
+      - JIRA_PROJECT_KEY=${JIRA_PROJECT_KEY}
 
   frontend:
     build: ./frontend
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
-    environment:
-      - NEXT_PUBLIC_API_URL=http://backend:8000
-    depends_on:
-      - backend
-
-  zap:
-    image: owasp/zap2docker-stable
-    ports:
-      - "8080:8080"
-    command: zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.key=changeme
-
-  db:
-    image: postgres:14
-    environment:
-      POSTGRES_DB: devsecops
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  mailhog:
-    image: mailhog/mailhog
-    ports:
-      - "8025:8025"
-
-volumes:
-  postgres_data:
