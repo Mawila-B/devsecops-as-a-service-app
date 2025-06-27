@@ -1,42 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Security Report - {{ scan_id }}</title>
-    <style>
-        :root { --critical: #ff3860; --high: #ff7043; --medium: #ffb300; }
-        .critical { background-color: var(--critical); }
-        .high { background-color: var(--high); }
-        .medium { background-color: var(--medium); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DevSecOps Scan Report - {{ scan_id }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f7f9fc; color: #333; }
+    h1 { color: #2a4365; }
+    h2 { border-bottom: 2px solid #2a4365; padding-bottom: 5px; }
+    .summary { background: #e2e8f0; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
+    pre { background: #edf2f7; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    .section { margin-bottom: 40px; }
+  </style>
 </head>
 <body>
-    <h1>Security Scan Report</h1>
-    <p>Scan ID: {{ scan_id }}</p>
-    <p>Target: {{ target }}</p>
-    
-    {% for scanner, results in findings.items() %}
-    <section>
-        <h2>{{ scanner | upper }} Results</h2>
-        <table>
-            <thead><tr><th>Severity</th><th>Issue</th><th>Description</th></tr></thead>
-            <tbody>
-            {% for item in results %}
-                <tr class="{{ item.severity | lower }}">
-                    <td>{{ item.severity }}</td>
-                    <td>{{ item.rule_id }}</td>
-                    <td>{{ item.description | truncate(100) }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </section>
-    {% endfor %}
-    
-    {% if ai_summary %}
-    <section>
-        <h2>AI Analysis</h2>
-        <p>{{ ai_summary }}</p>
-    </section>
+  <h1>DevSecOps Scan Report</h1>
+  <p><strong>Scan ID:</strong> {{ scan_id }}</p>
+
+  <div class="summary">
+    <h2>Summary</h2>
+    <ul>
+      <li>tfsec Findings: {{ summary.tfsec }}</li>
+      <li>trivy Findings: {{ summary.trivy }}</li>
+      <li>gitleaks Findings: {{ summary.gitleaks }}</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>tfsec Results</h2>
+    {% if tfsec and tfsec.results %}
+      <ul>
+        {% for item in tfsec.results %}
+          <li><strong>{{ item.severity }}</strong> - {{ item.description }} (Location: {{ item.location.filename }}:{{ item.location.start_line }})</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No tfsec issues found.</p>
     {% endif %}
+  </div>
+
+  <div class="section">
+    <h2>Trivy Results</h2>
+    {% if trivy %}
+      <ul>
+        {% for result in trivy %}
+          <li><strong>{{ result.VulnerabilityID }}</strong> - {{ result.PkgName }}: {{ result.Title }} (Severity: {{ result.Severity }})</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No Trivy vulnerabilities found.</p>
+    {% endif %}
+  </div>
+
+  <div class="section">
+    <h2>Gitleaks Results</h2>
+    {% if gitleaks and gitleaks.Leaks %}
+      <ul>
+        {% for leak in gitleaks.Leaks %}
+          <li><strong>{{ leak.Description }}</strong> - File: {{ leak.File }} (Line: {{ leak.Line }})</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No secrets detected by Gitleaks.</p>
+    {% endif %}
+  </div>
+
 </body>
 </html>
