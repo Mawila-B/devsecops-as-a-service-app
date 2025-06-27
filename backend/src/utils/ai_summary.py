@@ -85,3 +85,9 @@ def generate_ai_summary(findings: dict) -> str:
     except Exception as e:
         logger.error(f"AI summary failed: {str(e)}")
         return "AI summary unavailable due to technical error"
+
+# Stub GPT-4 summary helper
+def generate_gpt_summary(scan_results):
+    # This is a placeholder for GPT-4o or OpenAI API integration
+    # You can later call OpenAI API here to create natural language summaries
+    return "This is a stub summary of the scan results."
